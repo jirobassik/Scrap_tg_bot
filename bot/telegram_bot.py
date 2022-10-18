@@ -1,8 +1,8 @@
 import time
 import telebot
 from help_func import string_converse
-from scrap_habr_freelance import ParseHabr
-from scrap_rabotaby import ParseRabota
+from scrap.scrap_habr_freelance import ParseHabr
+from scrap.scrap_rabotaby import ParseRabota
 import threading
 
 bot = telebot.TeleBot("5551249593:AAGlZTyq-ECD2vnjJp5nxFCt2npseTwY88s")
@@ -18,7 +18,7 @@ def com_help(message):
 def tracking(message):
     bot.send_message(message.chat.id, "Начинаю отслеживать\nfreelance.habr.com и rabota.by")
 
-    def loop(name_class, choose: str, timer: int, time_counter_sum: int, time_to_push: int) -> None:
+    def loop(name_class, choose: str, timer: int, time_to_push: int) -> None:
         bot.send_message(message.chat.id, text=string_converse(name_class.get_first_info(), choose=choose))
         time_counter, collect_info_to_print = 0, []
         while True:
@@ -35,15 +35,13 @@ def tracking(message):
                                      else "В rabota.by" " ничего нового нет..."))
                     time_counter = 0
             time.sleep(timer)
-            time_counter += time_counter_sum
+            time_counter += (timer // 60)
 
-    thread_habr = threading.Thread(target=loop, args=(task_habr, "habr", 600, 10, 60), daemon=True)
-    thread_rabota = threading.Thread(target=loop, args=(vacancy_rabota, "rabota", 600, 10, 60), daemon=True)
+    thread_habr = threading.Thread(target=loop, args=(task_habr, "habr", 300, 60), daemon=True)
+    thread_rabota = threading.Thread(target=loop, args=(vacancy_rabota, "rabota", 600, 60), daemon=True)
 
     thread_habr.start()
     thread_rabota.start()
 
 
 bot.polling(none_stop=True, interval=0)
-
-
