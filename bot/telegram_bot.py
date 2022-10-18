@@ -24,7 +24,6 @@ def tracking(message):
         while True:
             if name_class.search_new_info():
                 collect_info_to_print.extend(name_class.get_new_many_info())
-            print(choose, time_counter)
             match collect_info_to_print:
                 case _ if time_counter >= time_to_push and len(collect_info_to_print) != 0:
                     bot.send_message(message.chat.id, text=string_converse(collect_info_to_print, choose=choose))
