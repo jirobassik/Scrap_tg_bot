@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import time
+import re
 
 
 class ParseRabota:
@@ -18,43 +18,34 @@ class ParseRabota:
         self.allVacancy = self.soup.findAll("div", class_="serp-item")
         self.Vacancy = self.soup.find('div', class_='serp-item')
 
-    def get_vacancy(self):
-        vacancy_text = self.soup.find("a", class_="serp-item__title").text
-        vacancy_text_href = self.soup.find("a", class_="serp-item__title").get("href")
-        self.update_request_data()
-        return {"vacancy_text": vacancy_text,
-                "vacancy_text_href": vacancy_text_href,
-                }
+    def get_first_info(self):
+        return [{"vacancy_text": self.soup.find("a", class_="serp-item__title").text,
+                 "vacancy_text_href": self.soup.find("a", class_="serp-item__title").get("href"),
+                 }]
 
-    def get_new_vacancy(self):
-        list_dicts_tasks = []
-        for vacancy in list(self.allVacancy):
-            vacancy_text = vacancy.find("a", class_="serp-item__title").text
-            vacancy_text_href = vacancy.find("a", class_="serp-item__title").get("href")
-            list_dicts_tasks.append({"vacancy_text": vacancy_text,
-                                     "vacancy_text_href": vacancy_text_href,
-                                     })
-            self.update_request_data()
-        return list_dicts_tasks
-
-    def search_new_vacancy(self):
-        set_old_vacancy = set(task_text.find("a", class_='serp-item__title').text for task_text in self.allVacancy)
+    def get_new_many_info(self):
+        list_dicts_vacancy = [{"vacancy_text": vac.find("a", class_="serp-item__title").text,
+                               "vacancy_text_href": vac.find("a", class_="serp-item__title").get("href"), }
+                              for vac in list(self.Vacancy)]
+        print("list vacancy", list_dicts_vacancy)
         self.update_request_data()
+        return list_dicts_vacancy
+
+    def search_new_info(self):
+        def get_id(vac_search):
+            return re.search(r'(?<=/)[0-9]+', vac_search.find("a", class_="serp-item__title").get("href")).group()
+
+        set_old_vacancy = set(get_id(task_text_1) for task_text_1 in self.allVacancy)
+        print("set old vac", set_old_vacancy)
+        self.update_request_data()
+
         new_vacancy = self.soup.findAll('div', class_='serp-item')
-        set_new_vacancy = set(task_text.find("a", class_='serp-item__title').text for task_text in new_vacancy)
-        new_vacancy = set_new_vacancy.difference(set_old_vacancy)
-        if len(new_vacancy) != 0:
+        set_new_vacancy = set(get_id(task_text_2) for task_text_2 in new_vacancy)
+        print("set new vac", set_new_vacancy)
+
+        diff_vacancy = set_new_vacancy.difference(set_old_vacancy)
+        print("diff vac", diff_vacancy)
+        if len(diff_vacancy) != 0:
             self.Vacancy = [parse_el for parse_el in new_vacancy
-                            if parse_el.find("a", class_="serp-item__title").text in new_vacancy]
+                            if get_id(parse_el) in diff_vacancy]
             return True
-
-
-a = ParseRabota()
-print(a.get_vacancy())
-while True:
-    if a.search_new_vacancy():
-        print("Есть инфа")
-        print(a.get_new_vacancy())
-    else:
-        print("Нет инфы")
-    time.sleep(300)
