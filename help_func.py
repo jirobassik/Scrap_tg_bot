@@ -1,4 +1,6 @@
 import string
+import re
+from json_func import json_upload_tuple
 
 def string_converse(list_dicts_: list, choose: str) -> str:
     res_string = ""
@@ -15,3 +17,26 @@ def string_converse(list_dicts_: list, choose: str) -> str:
         temp_res = template.substitute(dicts)
         res_string += temp_res + "\n"
     return res_string
+
+def search_task_keyword(list_keywords: list, str_match: str) -> bool:
+    for keywords in list_keywords:
+        if re.search(fr'[^разработать]{keywords}', str_match.lower()): # передалть регулярку
+            return True
+    return False
+
+def send_message_tags_keyw(message, bot) -> None:
+    json_upl = json_upload_tuple()[2]
+    match json_upl:
+        case {"tags": [], "keywords": []}:
+            tags = "Нет заданных тэгов"
+            keywords = "Нет заданных ключевых слов"
+        case {"tags": tags, "keywords": []}:
+            tags = "Заданные тэги: {x}".format(x=", ".join(tags))
+            keywords = "Нет заданных ключевых слов"
+        case {"tags": [], "keywords": keywords}:
+            tags = "Нет заданных тэгов"
+            keywords = "Заданные ключевые слова: {x}".format(x=", ".join(keywords))
+        case {"tags": tags, "keywords": keywords}:
+            tags = "Заданные тэги: {x}".format(x=", ".join(tags))
+            keywords = "Заданные ключевые слова: {x}".format(x=", ".join(keywords))
+    bot.send_message(message.chat.id, text=tags + "\n" + keywords)
