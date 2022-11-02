@@ -14,7 +14,7 @@ class ParseHabr:
         self.soup = BeautifulSoup(self.page.text, "html.parser")
         self.allTasks = [filtered for filtered in self.soup.findAll('li', class_='content-list__item')
                          if filtered != "\n"]
-        self.Task_list = [filtered for filtered in self.soup.findAll('li', class_='content-list__ite m')
+        self.Task_list = [filtered for filtered in self.soup.findAll('li', class_='content-list__item')
                           if filtered != "\n"]
         self.Task = self.soup.find('li', class_='content-list__item')
 
