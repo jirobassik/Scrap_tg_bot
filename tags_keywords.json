@@ -1,9 +1,10 @@
 {
     "tags": [
         "css",
-        "html"
+        "html",
+        "bash",
+        "python",
+        "git"
     ],
-    "keywords": [
-        "сайт"
-    ]
+    "keywords": []
 }
