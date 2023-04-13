@@ -35,13 +35,11 @@ def delete_keywords(call):
                               parse_mode='HTML')
 
 def make_keyboard(json_list: list):
-    cross_icon = u"\u274C"
     markup = types.InlineKeyboardMarkup()
     match json_upload_tuple()[2]:
         case {"keywords": []}:
             pass
         case {"keywords": _}:
             for value in json_list:
-                markup.add(types.InlineKeyboardButton(text=value, callback_data=value),
-                           types.InlineKeyboardButton(text=cross_icon, callback_data="['keywords', '" + value + "']"))
+                markup.add(types.InlineKeyboardButton(text=value, callback_data=value),)
     return markup

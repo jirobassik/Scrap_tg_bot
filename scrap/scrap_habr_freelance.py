@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import nums_from_string
 from json_func import json_upload_tuple
-from help_func import search_task_keyword
+from text_util.text_analyzer import fuzzy_search
 from datetime import datetime
 
 
@@ -93,11 +93,11 @@ class ParseHabr:
                 case {"tags": tags, "keywords": []}:
                     if len(set(tags).intersection(list_tags)) == 0:
                         self.Task_list.remove(task)
-                case {"tags": [], "keywords": keywords} if not search_task_keyword(keywords, text):
-                    if not search_task_keyword(keywords, text):
+                case {"tags": [], "keywords": keywords}:
+                    if not fuzzy_search(text, *keywords):
                         self.Task_list.remove(task)
                 case {"tags": tags, "keywords": keywords}:
-                    if not search_task_keyword(keywords, text) or len(set(tags).intersection(list_tags)) == 0:
+                    if not fuzzy_search(text, *keywords) or len(set(tags).intersection(list_tags)) == 0:
                         self.Task_list.remove(task)
 
     def search_new_info(self) -> bool:  # не очень
@@ -120,4 +120,3 @@ class ParseHabr:
             self.filter_tasks()
             if len(self.Task_list) != 0:
                 return True
-

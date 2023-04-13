@@ -15,6 +15,7 @@ def com_help(message):
                                            "/start_track - Начать отслеживать freelance.habr.com и rabota.by\n"
                                            "/stop_track - Прекратить отслеживать freelance.habr.com и rabota.by\n")
 
+
 @bot.message_handler(commands=["start_track"])
 def tracking(message):
     if not thread_habr.get_status() and not thread_rabota.get_status():
@@ -25,6 +26,7 @@ def tracking(message):
     else:
         bot.send_message(message.chat.id, "Уже отслеживаются\nfreelance.habr.com и rabota.by")
 
+
 @bot.message_handler(commands=["stop_track"])
 def stop_tracking(message):
     if thread_habr.get_status() and thread_rabota.get_status():
@@ -33,6 +35,7 @@ def stop_tracking(message):
         bot.send_message(message.chat.id, "Прекращаю отслеживать\nfreelance.habr.com и rabota.by")
     else:
         bot.send_message(message.chat.id, "Отслеживание нельзя прекратить, так как оно не начиналось")
+
 
 @bot.message_handler(commands=["launch"])
 def launch(message):
@@ -45,6 +48,7 @@ def launch(message):
     markup.add(but_start_track, but_stop_track, but_tags, but_keywords, but_orders)
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
 
+
 @bot.message_handler(commands=["orders"])
 def orders(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -52,9 +56,11 @@ def orders(message):
     but_paged_orders = types.KeyboardButton("Заказы по страницам")
     but_paged_search_by_tags = types.KeyboardButton("Поиск заказов по тэгам")
     but_filter_orders = types.KeyboardButton("Фильтрованные заказы")
+    download_orders = types.KeyboardButton("Скачать заказы")
     but_main = types.KeyboardButton("Главная")
-    markup.add(but_orders, but_paged_orders, but_paged_search_by_tags, but_filter_orders, but_main)
+    markup.add(but_orders, but_paged_orders, but_paged_search_by_tags, but_filter_orders, but_main, download_orders)
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+
 
 @bot.message_handler(commands=["tags"])
 def tag(message):
@@ -66,6 +72,7 @@ def tag(message):
     markup.add(but_show, but_add, but_dell, but_main)
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
 
+
 @bot.message_handler(commands=["keywords"])
 def keywords_(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -75,6 +82,13 @@ def keywords_(message):
     but_main = types.KeyboardButton("Главная")
     markup.add(but_show, but_add, but_dell, but_main)
     bot.send_message(message.chat.id, 'Выберите что вам надо', reply_markup=markup)
+
+
+def send_document(message):
+    with open('D:\Programs\PyCharm 2021.3.3\PetPr Get data and push Tg bot\\text_util\\temp\habr_orders.csv',
+              'r', encoding='utf-8') as doc:
+        bot.send_document(message.chat.id, document=doc)
+
 
 @bot.message_handler(content_types=['text'])
 def tags_use(message):
@@ -109,6 +123,8 @@ def tags_use(message):
             paged_orders_search_tags_start(message)
         case "Фильтрованные заказы":
             order_start_filter(message)
+        case "Скачать заказы":
+            send_document(message)
         case "Главная":
             launch(message)
 

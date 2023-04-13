@@ -18,14 +18,10 @@ def string_converse(list_dicts_: list, choose: str) -> str:
         res_string += temp_res + "\n"
     return res_string
 
-def search_task_keyword(list_keywords: list, str_match: str) -> bool:
-    for keywords in list_keywords:
-        if re.search(fr'[^разработать]{keywords}', str_match.lower()): # передалть регулярку
-            return True
-    return False
-
 def send_message_tags_keyw(message, bot) -> None:
     json_upl = json_upload_tuple()[2]
+    tags = "Нет заданных тэгов"
+    keywords = "Нет заданных ключевых слов"
     match json_upl:
         case {"tags": [], "keywords": []}:
             tags = "Нет заданных тэгов"
