@@ -75,7 +75,7 @@ class ParseHabr:
         return res_list
 
     def search_by_tags_all_page(self, tags: list) -> list:
-        all_page = self.get_tasks_all_page(1, self.find_last_page())
+        all_page = self.get_tasks_all_page(1, 2)
         for list_dicts in all_page:
             for dicts_ in reversed(list_dicts):
                 if len(set(tags).intersection(dicts_['tag_list'].split(", "))) == 0:
